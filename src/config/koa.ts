@@ -1,6 +1,7 @@
 import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
 import Application from 'koa';
+import initRoutes from './routes';
 
 
 export default class MainApplication {
@@ -14,6 +15,8 @@ export default class MainApplication {
     public async listen(): Promise<void> {
         // Init middlewares
         this.middlewares()
+
+        initRoutes(this.app);
 
         this.app.listen(this.port, () => {
             console.log(`server is running on port ${this.port}`)
