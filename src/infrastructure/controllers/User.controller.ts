@@ -38,8 +38,12 @@ router.get("/users/:id", async (ctx: Context) => {
         }
         return
     }
-
     ctx.body = user;
+})
+
+router.get("/users", async (ctx: Context) => {
+    const users = await userService.getAllUsers(ctx.query?? {});
+    ctx.body = users;
 })
 
 export default router;

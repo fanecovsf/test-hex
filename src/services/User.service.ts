@@ -3,6 +3,8 @@ import { GetUserByEmailUseCase } from "@/application/use-cases/user/get-user-by-
 import { GetUserByIdUseCase } from "@/application/use-cases/user/get-user-by-id.use-case";
 import { UserRepository } from "@/domain/ports/User.repository";
 import { CreateUserDTO, UserResponseDTO } from "@/application/dtos/User.dto";
+import { GetAllUsersUseCase } from "@/application/use-cases/user/get-all-users.use-case";
+import { ParsedUrlQuery } from "querystring";
 
 export class UserService {
     constructor(private userRepository: UserRepository) {}
@@ -20,5 +22,10 @@ export class UserService {
     async getUserByEmail(email: string): Promise<UserResponseDTO | null> {
         const getUserByEmailUseCase = new GetUserByEmailUseCase(this.userRepository);
         return await getUserByEmailUseCase.execute(email);
+    }
+
+    async getAllUsers(filter: ParsedUrlQuery): Promise<UserResponseDTO[]> {
+        const getAllUsersUseCase = new GetAllUsersUseCase(this.userRepository);
+        return await getAllUsersUseCase.execute(filter);
     }
 }
