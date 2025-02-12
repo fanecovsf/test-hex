@@ -6,11 +6,9 @@ export class CreateUserUseCase {
     constructor(private userRepository: UserRepository) {}
 
     async execute(data: CreateUserDTO): Promise<UserResponseDTO> {
-        const existingUser = await this.userRepository.findByEmail(data.email);
-        if (existingUser) throw new Error("Email já cadastrado");
-
         const user = User.create(data.email, data.password);
-        const createdUser = await this.userRepository.create(user);
+        const userDto = new CreateUserDTO(user.email, user.password, data.permissions);
+        const createdUser = await this.userRepository.create(userDto);
 
         return UserResponseDTO.fromDomain(createdUser);
     }

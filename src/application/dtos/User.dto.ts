@@ -1,8 +1,9 @@
 import { User } from "@/domain/entities/User";
 import { Permission } from "@prisma/client";
+import { AddPermissionDTO } from "./Permission.dto";
 
 export class CreateUserDTO {
-    constructor(public email: string, public password: string, public permissions?: Permission[]) {}
+    constructor(public email: string, public password: string, public permissions?: AddPermissionDTO) {}
 }
 
 export class UserResponseDTO {

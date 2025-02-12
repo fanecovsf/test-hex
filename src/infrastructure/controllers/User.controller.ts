@@ -33,7 +33,8 @@ interface UserRequestBody {
 
 router.post("/users", validate(userSchema), async (ctx: Context) => {
     const body = ctx.request.body as UserRequestBody;
-    const dto = new CreateUserDTO(body.email, body.password?? "");
+    const { permissions, ...rest } = body;
+    const dto = new CreateUserDTO(body.email, body.password?? "", permissions ? new AddPermissionDTO(permissions) : new AddPermissionDTO([]));
     const user = await userService.createUser(dto);
     ctx.body = user;
 })

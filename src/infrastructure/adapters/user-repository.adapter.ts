@@ -2,35 +2,30 @@ import prisma from "@/config/prisma";
 import { User } from "@/domain/entities/User";
 import { UserRepository } from "@/domain/ports/User.repository";
 import { ParsedUrlQuery } from "querystring";
-import { Permission } from "@/domain/entities/Permission";
 import { AddPermissionDTO } from "@/application/dtos/Permission.dto";
+import { CreateUserDTO } from "@/application/dtos/User.dto";
 
 
 export class PrismaUserRepository implements UserRepository {
-    async create(user: User): Promise<User> {
+    async create(user: CreateUserDTO): Promise<User> {
         const createdUser = await prisma.user.create({
             data: {
                 email: user.email,
                 password: user.password,
-                permissions: {
-                    connect: user.permissions?.map((permission: Permission): { userId_permissionId: { userId: string, permissionId: string } } => ({
-                        userId_permissionId: {
-                            userId: createdUser.id,
-                            permissionId: permission.id
-                        }
-                    })) || [],
+                permissions: !user.permissions?.permissionIds.length? undefined : {
+                    create: user.permissions.permissionIds.map((permissionDto) => ({
+                        permission: { connect: { id: permissionDto } }
+                    }))
                 }
             },
-            include: {
-                permissions: true,
-            }
+            include: { permissions: { include: { permission: true } } }
         });
-        return new User(createdUser.id, createdUser.email, createdUser.password);
+        return new User(createdUser.id, createdUser.email, createdUser.password, createdUser.permissions.map((p) => p.permission));
     }
 
     async findById(id: string): Promise<User | null> {
-        const user = await prisma.user.findUnique({ where: { id } });
-        return user ? new User(user.id, user.email, user.password) : null;
+        const user = await prisma.user.findUnique({ where: { id }, include: { permissions: { include: { permission: true } } } });
+        return user ? new User(user.id, user.email, user.password, user.permissions.map((p) => p.permission)) : null;
     }
 
     async findByEmail(email: string): Promise<User | null> {
@@ -39,12 +34,6 @@ export class PrismaUserRepository implements UserRepository {
     }
 
     async findAll(filter: ParsedUrlQuery): Promise<User[]> {
-        const options = {
-            id: true,
-            email: true,
-            permissions: true
-        }
-
         const users = await prisma.user.findMany({
             where: filter,
             include: {
