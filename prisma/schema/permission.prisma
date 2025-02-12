@@ -1,0 +1,15 @@
+model Permission {
+    id       String           @id @default(uuid())
+    name     String           @unique
+    nickname String           @unique
+    users    UserPermission[]
+}
+
+model UserPermission {
+    userId       String
+    permissionId String
+    permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+    user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@id([userId, permissionId])
+}

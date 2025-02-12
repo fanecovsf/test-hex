@@ -4,7 +4,8 @@ import { CreateUserDTO } from "@/application/dtos/User.dto";
 import { validate } from "../middlewares/schemaValidation.middleware";
 import { UserService } from "@/services/User.service";
 import { Context } from "koa";
-import { object, string } from "yup";
+import { array, object, string } from "yup";
+import { uuidRegex } from "@/utils/regex";
 
 const router = new Router();
 const userRepository = new PrismaUserRepository();
@@ -12,11 +13,13 @@ const userService = new UserService(userRepository);
 
 const userSchema = object({
     email: string().email().required(),
-    password: string().required().min(6)
+    password: string().required().min(6),
+    permissions: array().of(string().matches(uuidRegex)).optional()
 }).noUnknown('Campo desconhecido').strict();
 
 const userEditSchema = object({
-    email: string().email().optional()
+    email: string().email().optional(),
+    permissions: array().of(string().matches(uuidRegex)).optional()
 }).noUnknown('Campo desconhecido').strict();
 
 interface UserRequestBody {

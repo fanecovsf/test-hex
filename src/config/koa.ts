@@ -3,6 +3,7 @@ import bodyParser from 'koa-bodyparser';
 import Application from 'koa';
 import initRoutes from './routes';
 import { globalErrorHandlerMiddleware } from '@/infrastructure/middlewares/globalErrorHandler.middleware';
+import { permissionSeed } from '@/infrastructure/seeds/Permission.seed';
 
 
 export default class MainApplication {
@@ -15,8 +16,11 @@ export default class MainApplication {
     }
 
     public async listen(): Promise<void> {
+        // Init seeds
+        await permissionSeed();
+
         // Init middlewares
-        this.middlewares()
+        this.middlewares();
 
         initRoutes(this.app);
 
