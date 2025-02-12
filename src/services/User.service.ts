@@ -6,6 +6,7 @@ import { CreateUserDTO, UserResponseDTO, UpdateUserDTO } from "@/application/dto
 import { GetAllUsersUseCase } from "@/application/use-cases/user/get-all-users.use-case";
 import { ParsedUrlQuery } from "querystring";
 import { EditUserUseCase } from "@/application/use-cases/user/edit-user.use-case";
+import { DeleteUserUseCase } from "@/application/use-cases/user/delete-user.use-case";
 
 export class UserService {
     constructor(private userRepository: UserRepository) {}
@@ -33,5 +34,10 @@ export class UserService {
     async editUser(id: string, data: UpdateUserDTO): Promise<UserResponseDTO> {
         const editUserUseCase = new EditUserUseCase(this.userRepository);
         return await editUserUseCase.execute(id, data);
+    }
+
+    async deleteUser(id: string): Promise<UserResponseDTO> {
+        const deleteUserUseCase = new DeleteUserUseCase(this.userRepository);
+        return await deleteUserUseCase.execute(id);
     }
 }

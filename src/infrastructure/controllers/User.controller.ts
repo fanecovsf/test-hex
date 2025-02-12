@@ -58,4 +58,13 @@ router.put("/users/:id", validate(userEditSchema), async (ctx: Context) => {
     ctx.body = user;
 })
 
+router.delete("/users/:id", async (ctx: Context) => {
+    const { id } = ctx.params;
+    const user = await userService.deleteUser(id);
+    ctx.body = {
+        message: "Usuário deletado com sucesso",
+        user
+    }
+})
+
 export default router;
