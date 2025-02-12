@@ -11,3 +11,7 @@ export class UserResponseDTO {
         return new UserResponseDTO(user.id, user.email)
     }
 }
+
+export class UpdateUserDTO {
+    constructor(public email: string) {}
+}

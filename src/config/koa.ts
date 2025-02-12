@@ -2,6 +2,7 @@ import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
 import Application from 'koa';
 import initRoutes from './routes';
+import { globalErrorHandlerMiddleware } from '@/infrastructure/middlewares/globalErrorHandler.middleware';
 
 
 export default class MainApplication {
@@ -9,6 +10,7 @@ export default class MainApplication {
     public app: Application = new Koa();
 
     private middlewares(): void {
+        this.app.use(globalErrorHandlerMiddleware);
         this.app.use(bodyParser());
     }
 

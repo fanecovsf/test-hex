@@ -29,5 +29,12 @@ export class PrismaUserRepository implements UserRepository {
         const users = await prisma.user.findMany({ where: filter });
         return users
     }
+
+    async edit(id: string, user: Partial<User>): Promise<User> {
+        return await prisma.user.update({
+            where: { id },
+            data: user
+        });
+    }
 }
 

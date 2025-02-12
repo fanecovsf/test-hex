@@ -13,16 +13,21 @@ const userService = new UserService(userRepository);
 const userSchema = object({
     email: string().email().required(),
     password: string().required().min(6)
-});
+}).noUnknown('Campo desconhecido').strict();
+
+const userEditSchema = object({
+    email: string().email().optional()
+}).noUnknown('Campo desconhecido').strict();
 
 interface UserRequestBody {
     email: string,
-    password: string
-}
+    password?: string
+};
+
 
 router.post("/users", validate(userSchema), async (ctx: Context) => {
     const body = ctx.request.body as UserRequestBody;
-    const dto = new CreateUserDTO(body.email, body.password);
+    const dto = new CreateUserDTO(body.email, body.password?? "");
     const user = await userService.createUser(dto);
     ctx.body = user;
 })
@@ -44,6 +49,13 @@ router.get("/users/:id", async (ctx: Context) => {
 router.get("/users", async (ctx: Context) => {
     const users = await userService.getAllUsers(ctx.query?? {});
     ctx.body = users;
+})
+
+router.put("/users/:id", validate(userEditSchema), async (ctx: Context) => {
+    const { id } = ctx.params;
+    const body = ctx.request.body as UserRequestBody;
+    const user = await userService.editUser(id, body);
+    ctx.body = user;
 })
 
 export default router;

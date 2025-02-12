@@ -2,9 +2,10 @@ import { CreateUserUseCase } from "@/application/use-cases/user/create-user.use-
 import { GetUserByEmailUseCase } from "@/application/use-cases/user/get-user-by-email.use-case";
 import { GetUserByIdUseCase } from "@/application/use-cases/user/get-user-by-id.use-case";
 import { UserRepository } from "@/domain/ports/User.repository";
-import { CreateUserDTO, UserResponseDTO } from "@/application/dtos/User.dto";
+import { CreateUserDTO, UserResponseDTO, UpdateUserDTO } from "@/application/dtos/User.dto";
 import { GetAllUsersUseCase } from "@/application/use-cases/user/get-all-users.use-case";
 import { ParsedUrlQuery } from "querystring";
+import { EditUserUseCase } from "@/application/use-cases/user/edit-user.use-case";
 
 export class UserService {
     constructor(private userRepository: UserRepository) {}
@@ -27,5 +28,10 @@ export class UserService {
     async getAllUsers(filter: ParsedUrlQuery): Promise<UserResponseDTO[]> {
         const getAllUsersUseCase = new GetAllUsersUseCase(this.userRepository);
         return await getAllUsersUseCase.execute(filter);
+    }
+
+    async editUser(id: string, data: UpdateUserDTO): Promise<UserResponseDTO> {
+        const editUserUseCase = new EditUserUseCase(this.userRepository);
+        return await editUserUseCase.execute(id, data);
     }
 }

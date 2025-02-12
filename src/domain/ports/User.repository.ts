@@ -6,4 +6,5 @@ export interface UserRepository {
     findById(id: string): Promise<User | null>;
     findByEmail(email: string): Promise<User | null>;
     findAll(filter: ParsedUrlQuery): Promise<User[]>;
+    edit(id: string, user: Partial<User>): Promise<User>;
 }
