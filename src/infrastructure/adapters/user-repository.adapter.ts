@@ -2,7 +2,7 @@ import prisma from "@/config/prisma";
 import { User } from "@/domain/entities/User";
 import { UserRepository } from "@/domain/ports/User.repository";
 import { ParsedUrlQuery } from "querystring";
-import { Permission } from "@prisma/client";
+import { Permission } from "@/domain/entities/Permission";
 
 
 export class PrismaUserRepository implements UserRepository {
@@ -38,23 +38,57 @@ export class PrismaUserRepository implements UserRepository {
     }
 
     async findAll(filter: ParsedUrlQuery): Promise<User[]> {
-        const users = await prisma.user.findMany({ where: filter });
-        return users
-    }
-
-    async edit(id: string, user: Partial<User>): Promise<User> {
-        const updateData: Record<string, any> = {
-            email: user.email,
-            password: user.password,
-            permissions: {
-                connect: user.permissions?.map(permission => ({ id: permission.id }))
-            }
+        const options = {
+            id: true,
+            email: true,
+            permissions: true
         }
 
-        return await prisma.user.update({
-            where: { id },
-            data: updateData
+        const users = await prisma.user.findMany({
+            where: filter,
+            include: {
+                permissions: {
+                    include: {
+                        permission: {
+                            select: {
+                                id: true,
+                                name: true,
+                                nickname: true
+                            }
+                        }
+                    }
+                }
+            }
         });
+
+
+        return users.map(user => {
+            const permissions = user.permissions.map(p => p.permission);
+            return new User(user.id, user.email, "", permissions);
+        });
+    }
+
+    async edit(id: string, user: Partial<User>, permissions: string[]): Promise<User> {
+        const updatedUser = await prisma.user.update({
+            where: { id },
+            data: {
+                ...user,
+                permissions: {
+                    deleteMany: {},
+                    create: permissions.map((permissionId) => ({
+                        permission: { connect: { id: permissionId } }
+                    }))
+                }
+            },
+            include: { permissions: { include: { permission: true } } }
+        });
+    
+        return new User(
+            updatedUser.id,
+            updatedUser.email,
+            updatedUser.password,
+            updatedUser.permissions.map((p) => p.permission)
+        );
     }
 
     async delete(id: string): Promise<User> {

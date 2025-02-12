@@ -9,7 +9,7 @@ export async function permissionSeed(): Promise<void> {
     }));
 
     permissions.forEach(async (obj) => {
-        const existingPermission = prisma.permission.findUnique({ where: { name: obj.name } });
+        const existingPermission = await prisma.permission.findUnique({ where: { name: obj.name } });
 
         if (!existingPermission) {
             const data: Prisma.PermissionCreateInput = {

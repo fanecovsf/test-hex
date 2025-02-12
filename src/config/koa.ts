@@ -5,7 +5,6 @@ import initRoutes from './routes';
 import { globalErrorHandlerMiddleware } from '@/infrastructure/middlewares/globalErrorHandler.middleware';
 import { permissionSeed } from '@/infrastructure/seeds/Permission.seed';
 
-
 export default class MainApplication {
     private port: Number = Number(process.env.PORT) || 3000;
     public app: Application = new Koa();

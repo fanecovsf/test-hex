@@ -31,9 +31,9 @@ export class UserService {
         return await getAllUsersUseCase.execute(filter);
     }
 
-    async editUser(id: string, data: UpdateUserDTO): Promise<UserResponseDTO> {
+    async editUser(id: string, data: UpdateUserDTO, permissions: string[]): Promise<UserResponseDTO> {
         const editUserUseCase = new EditUserUseCase(this.userRepository);
-        return await editUserUseCase.execute(id, data);
+        return await editUserUseCase.execute(id, data, permissions);
     }
 
     async deleteUser(id: string): Promise<UserResponseDTO> {
