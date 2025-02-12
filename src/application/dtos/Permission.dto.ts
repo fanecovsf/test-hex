@@ -7,3 +7,11 @@ export class PermissionResponseDTO {
         return new PermissionResponseDTO(permission.id, permission.name, permission.nickname)
     }
 }
+
+export class AddPermissionDTO {
+    constructor(public permissionIds: string[]) {
+        if (!Array.isArray(permissionIds)) {
+            throw new Error("Lista de permissões inválida.");
+        }
+    }
+}

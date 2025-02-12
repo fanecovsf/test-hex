@@ -3,6 +3,7 @@ import { User } from "@/domain/entities/User";
 import { UserRepository } from "@/domain/ports/User.repository";
 import { ParsedUrlQuery } from "querystring";
 import { Permission } from "@/domain/entities/Permission";
+import { AddPermissionDTO } from "@/application/dtos/Permission.dto";
 
 
 export class PrismaUserRepository implements UserRepository {
@@ -68,15 +69,15 @@ export class PrismaUserRepository implements UserRepository {
         });
     }
 
-    async edit(id: string, user: Partial<User>, permissions: string[]): Promise<User> {
+    async edit(id: string, user: Partial<User>, permissions: AddPermissionDTO | undefined): Promise<User> {
         const updatedUser = await prisma.user.update({
             where: { id },
             data: {
                 ...user,
-                permissions: {
+                permissions: !permissions?.permissionIds.length? undefined : {
                     deleteMany: {},
-                    create: permissions.map((permissionId) => ({
-                        permission: { connect: { id: permissionId } }
+                    create: permissions.permissionIds.map((permissionDto) => ({
+                        permission: { connect: { id: permissionDto } }
                     }))
                 }
             },

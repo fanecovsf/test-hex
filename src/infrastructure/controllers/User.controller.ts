@@ -7,6 +7,7 @@ import { Context } from "koa";
 import { array, object, string } from "yup";
 import { uuidRegex } from "@/utils/regex";
 import { uuidSchema } from "@/utils/schemas/uuidSchema";
+import { AddPermissionDTO } from "@/application/dtos/Permission.dto";
 
 const router = new Router();
 const userRepository = new PrismaUserRepository();
@@ -62,7 +63,8 @@ router.put("/users/:id", validate(userEditSchema), async (ctx: Context) => {
     await uuidSchema.validate(id);
     const body = ctx.request.body as UserRequestBody;
     const { permissions, ...rest } = body;
-    const user = await userService.editUser(id, rest, permissions?? []);
+    const permissionsDto = permissions ? new AddPermissionDTO(permissions) : undefined;
+    const user = await userService.editUser(id, rest, permissionsDto);
     ctx.body = user;
 })
 
