@@ -3,4 +3,6 @@ model User {
   email       String           @unique
   password    String
   permissions UserPermission[]
+  operationId String?
+  operation   Operation?       @relation(fields: [operationId], references: [id])
 }

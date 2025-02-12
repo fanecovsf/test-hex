@@ -5,8 +5,7 @@ import { PermissionRepository } from "@/domain/ports/Permission.repository";
 
 export class PrismaPermissionRepository implements PermissionRepository {
     async findAll(): Promise<Permission[]> {
-        const permissions = await prisma.permission.findMany();
-        return permissions
+        return await prisma.permission.findMany();
     }
 
     async findById(id: string): Promise<Permission | null> {
