@@ -16,17 +16,20 @@ const userService = new UserService(userRepository);
 const userSchema = object({
     email: string().email().required(),
     password: string().required().min(6),
+    operationId: string().matches(uuidRegex).required(),
     permissions: array().of(string().matches(uuidRegex, "UUID Inválido")).optional()
 }).noUnknown('Campo desconhecido').strict();
 
 const userEditSchema = object({
     email: string().email().optional(),
+    operationId: string().matches(uuidRegex).optional(),
     permissions: array().of(string().matches(uuidRegex, "UUID Inválido")).optional()
 }).noUnknown('Campo desconhecido').strict();
 
 interface UserRequestBody {
     email: string,
     password?: string,
+    operationId: string,
     permissions?: string[]
 };
 
@@ -34,7 +37,7 @@ interface UserRequestBody {
 router.post("/users", validate(userSchema), async (ctx: Context) => {
     const body = ctx.request.body as UserRequestBody;
     const { permissions, ...rest } = body;
-    const dto = new CreateUserDTO(body.email, body.password?? "", permissions ? new AddPermissionDTO(permissions) : new AddPermissionDTO([]));
+    const dto = new CreateUserDTO(body.email, body.password?? "", body.operationId ,permissions ? new AddPermissionDTO(permissions) : new AddPermissionDTO([]));
     const user = await userService.createUser(dto);
     ctx.body = user;
 })

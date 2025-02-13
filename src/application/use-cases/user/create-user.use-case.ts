@@ -6,9 +6,7 @@ export class CreateUserUseCase {
     constructor(private userRepository: UserRepository) {}
 
     async execute(data: CreateUserDTO): Promise<UserResponseDTO> {
-        const user = User.create(data.email, data.password);
-        const userDto = new CreateUserDTO(user.email, user.password, data.permissions);
-        const createdUser = await this.userRepository.create(userDto);
+        const createdUser = await this.userRepository.create(data);
 
         return UserResponseDTO.fromDomain(createdUser);
     }

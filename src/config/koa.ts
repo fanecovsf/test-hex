@@ -4,6 +4,7 @@ import Application from 'koa';
 import initRoutes from './routes';
 import { globalErrorHandlerMiddleware } from '@/infrastructure/middlewares/globalErrorHandler.middleware';
 import { permissionSeed } from '@/infrastructure/seeds/Permission.seed';
+import { operationSeed } from '@/infrastructure/seeds/Operation.seed';
 
 export default class MainApplication {
     private port: Number = Number(process.env.PORT) || 3000;
@@ -17,6 +18,7 @@ export default class MainApplication {
     public async listen(): Promise<void> {
         // Init seeds
         await permissionSeed();
+        await operationSeed();
 
         // Init middlewares
         this.middlewares();
